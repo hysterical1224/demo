@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--目标对象-->
+    <bean id="targetImpl" class="com.sinner.demo.proxy_jdk.impl.TargetImpl"/>
+    <!--切面对象-->
+    <bean id="advice" class="com.sinner.demo.proxy_jdk.Advice"/>
+    <bean id="myAspect" class="com.sinner.demo.proxy_jdk.MyAspect"/>
+
+<!--    配置织入：告诉spring框架，哪些切点需要进行哪些增强（前置、后置）-->
+    <aop:config>
+        <!--声明切面-->
+        <aop:aspect ref="advice">
+        <!--切面：切点+通知-->
+            <aop:before method="before" pointcut="execution(public void com.sinner.demo.proxy_jdk.impl.TargetImpl.save())"/>
+<!--            <aop:after method="after" pointcut="execution(public void com.sinner.demo.proxy_jdk.impl.TargetImpl.save())"/>-->
+            <!--execution([修饰符] 返回值类型 包名.类名.方法名(参数))
+
+            访问修饰符可以省略
+                 返回值类型、包名、类名、方法名可以使用星号*  代表任意
+                 包名与类名之间一个点 . 代表当前包下的类，两个点 .. 表示当前包及其子包下的类
+                 参数列表可以使用两个点 .. 表示任意个数，任意类型的参数列表
+                <aop:before>    用于配置前置通知。指定增强的方法在切入点方法之前执行
+                <aop:after-returning>   用于配置后置通知。指定增强的方法在切入点方法之后执行
+                <aop:around>    用于配置环绕通知。指定增强的方法在切入点方法之前和之后都执行
+                <aop:throwing>  用于配置异常抛出通知。指定增强的方法在出现异常时执行
+                <aop:after> 用于配置最终通知。无论增强方式执行是否有异常都会执行
+                -->
+        </aop:aspect>
+
+        <aop:aspect ref="myAspect">
+            <aop:pointcut id="errorPoint" expression="execution(public void com.sinner.demo.proxy_jdk.impl.TargetImpl.error())"/>
+            <aop:before method="before" pointcut="execution(public void com.sinner.demo.proxy_jdk.impl.TargetImpl.error())"/>
+            <aop:after-returning method="afterReturning" pointcut="execution(public void com.sinner.demo.proxy_jdk.impl.TargetImpl.error())"/>
+<!--            <aop:after-returning method="afterReturning" pointcut="execution(public void com.sinner.demo.proxy_jdk.impl.TargetImpl.save())"/>-->
+            <aop:after method="after" pointcut-ref="errorPoint"/>
+            <aop:after-throwing method="afterThrowing" pointcut="execution(public void com.sinner.demo.proxy_jdk.impl.*.*())"/>
+            <aop:around method="around" pointcut="execution(public void com.sinner.demo.proxy_jdk.impl.TargetImpl.around())"/>
+        </aop:aspect>
+    </aop:config>
+</beans>

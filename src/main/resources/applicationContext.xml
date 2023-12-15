@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+        <bean id="UserDao" class="com.sinner.demo.dao.impl.UserDaoImpl" scope="singleton" init-method="init" destroy-method="destroy"></bean>
+        <bean id="UserDao1" class="com.sinner.demo.dao.impl.UserDaoImpl" scope="prototype" init-method="init" destroy-method="destroy"></bean>
+        <bean id="UserDaoFactory" class="com.sinner.demo.dao.staticFactory" factory-method="getUserDao"></bean>
+        <bean id="DynamicFactory" class="com.sinner.demo.dao.factory"></bean>
+        <bean id="UD" factory-bean="DynamicFactory" factory-method="getUserDao"></bean>
+
+<!--        <bean id="US" class="com.sinner.demo.service.impl.UserServiceImpl"></bean>-->
+<!--        <bean id="US" class="com.sinner.demo.service.impl.UserServiceImpl">-->
+<!--                <property name="userDao" ref="UserDao"></property>-->
+<!--        </bean>-->
+        <bean id="US" class="com.sinner.demo.service.impl.UserServiceImpl" p:userDao-ref="UserDao"/>
+
+        <bean id="USC" class="com.sinner.demo.service.impl.UserServiceConstructor">
+                <constructor-arg name="userDao" ref="UserDao"></constructor-arg>
+        </bean>
+        <bean id="USS" class="com.sinner.demo.service.impl.UserServiceSet" p:userDao-ref="UserDao">
+                <property name="username" value="zhangsan"/>
+        </bean>
+
+        <bean id="USCN" class="com.sinner.demo.service.impl.UserServiceConName" p:userDao-ref="UserDao">
+                <constructor-arg name="username" value="lisi"/>
+        </bean>
+
+        <bean id="User" class="com.sinner.demo.domain.User"/>
+        <bean id="DaoImpl1" class="com.sinner.demo.dao.impl.UserDaoImpl1">
+                <property name="stringList">
+                        <list>
+                                <value>zhangsan</value>
+                                <value>lisi</value>
+
+                        </list>
+                </property>
+                <property name="userMap">
+                        <map>
+                                <entry key="user1" value-ref="user1"/>
+                                <entry key="user1" value-ref="user2"/>
+                        </map>
+                </property>
+                <property name="properties">
+                        <props>
+                                <prop key="p1">aaa</prop>
+                                <prop key="p2">bbb</prop>
+                                <prop key="p3">ccc</prop>
+                        </props>
+                </property>
+        </bean>
+        <bean id="user1" class="com.sinner.demo.domain.User">
+                <property name="username" value="songshen"/>
+                <property name="age" value="123"/>
+        </bean>
+        <bean id="user2" class="com.sinner.demo.domain.User">
+                <property name="username" value="hysterical"/>
+                <property name="age" value="12"/>
+        </bean>
+        <import resource="applicationContext1.xml"/>
+        <import resource="applicationContext3.xml"/>
+        <import resource="aop.xml"/>
+        <context:component-scan base-package="com.sinner.demo"/>
+
+
+
+
+
+<!--        <bean id="DDS" class="com.alibaba.druid.pool.DruidDataSource">-->
+<!--                <property name="username" value="root"></property>-->
+<!--                <property name="url" value="jdbc:mysql://127.0.0.1:3306/travel?useUnicode=true&amp;characterEncoding=utf8"></property>-->
+<!--                <property name="password" value="4ay6V638"></property>-->
+<!--                <property name="driver" value="com.mysql.jdbc.Driver"></property>-->
+
+<!--        </bean>-->
+
+</beans>
